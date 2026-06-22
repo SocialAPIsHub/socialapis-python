@@ -11,6 +11,8 @@ Field names match the live API exactly (verified against a real token,
 
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -85,5 +87,5 @@ class ProfileInfo(_Model):
     zip: str | None = None
 
     # Misc
-    pronouns: list | None = None
-    account_badges: list | None = None
+    pronouns: list[Any] | None = None
+    account_badges: list[Any] | None = None

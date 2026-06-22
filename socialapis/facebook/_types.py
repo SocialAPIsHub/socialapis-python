@@ -13,6 +13,8 @@ themselves.
 
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -108,11 +110,11 @@ class GroupInfo(_Model):
     group_total_members_info_text: str | None = None
     group_new_members_info_text: str | None = None
     description_text: str | None = None
-    privacy_info_text: dict | None = None
+    privacy_info_text: dict[str, Any] | None = None
     created_time: int | None = None
-    group_rules: list | None = None
-    group_history: dict | None = None
-    admin_tags: list | None = None
-    group_locations: list | None = None
+    group_rules: list[Any] | None = None
+    group_history: dict[str, Any] | None = None
+    admin_tags: list[Any] | None = None
+    group_locations: list[Any] | None = None
     number_of_posts_in_last_day: int | None = None
     number_of_posts_in_last_month: int | None = None
