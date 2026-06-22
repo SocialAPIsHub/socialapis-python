@@ -11,7 +11,6 @@ import respx
 
 from socialapis import AsyncInstagram, Instagram, ProfileInfo
 
-
 SAMPLE_PROFILE = {
     "id": "25025320",
     "username": "instagram",

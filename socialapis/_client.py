@@ -137,9 +137,7 @@ class BaseClient:
             )
 
         # Defensive — unreachable for valid HTTP responses
-        raise APIConnectionError(
-            f"Unexpected status code {status}: {message}"
-        )
+        raise APIConnectionError(f"Unexpected status code {status}: {message}")
 
 
 def _safe_json(response: httpx.Response) -> dict[str, Any]:

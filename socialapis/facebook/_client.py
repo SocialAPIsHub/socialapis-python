@@ -36,7 +36,10 @@ from .._errors import APIConnectionError
 from ._types import GroupInfo, PageInfo
 
 if TYPE_CHECKING:
-    from typing import Self
+    # `Self` is in typing as of Python 3.11; for our 3.10 baseline we
+    # use the typing_extensions backport. typing_extensions is already
+    # a transitive dependency of pydantic, so no extra install.
+    from typing_extensions import Self
 
 
 # ---------------------------------------------------------------------------
@@ -47,6 +50,7 @@ if TYPE_CHECKING:
 # users pass whichever form is natural and we coerce to what the API
 # expects.
 # ---------------------------------------------------------------------------
+
 
 def _as_facebook_url(value: str, base: str = "https://www.facebook.com") -> str:
     """Normalise a slug or full URL to a canonical Facebook URL.
@@ -638,10 +642,12 @@ class AsyncFacebook(BaseClient):
     # =======================================================================
 
     async def get_page_id(self, page: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/pages/id",
-            _params(("link", _as_facebook_url(page)), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/pages/id",
+                _params(("link", _as_facebook_url(page)), extra=kwargs),
+            )
+        ).json()
 
     async def get_page_info(self, page: str, **kwargs: Any) -> PageInfo:
         response = await self._get(
@@ -651,32 +657,40 @@ class AsyncFacebook(BaseClient):
         return PageInfo.model_validate(response.json())
 
     async def get_page_posts(self, page: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/pages/posts",
-            _params(("link", _as_facebook_url(page)), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/pages/posts",
+                _params(("link", _as_facebook_url(page)), extra=kwargs),
+            )
+        ).json()
 
     async def get_page_reels(self, page: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/pages/reels",
-            _params(("link", _as_facebook_url(page)), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/pages/reels",
+                _params(("link", _as_facebook_url(page)), extra=kwargs),
+            )
+        ).json()
 
     async def get_page_videos(self, page: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/pages/videos",
-            _params(("link", _as_facebook_url(page)), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/pages/videos",
+                _params(("link", _as_facebook_url(page)), extra=kwargs),
+            )
+        ).json()
 
     # =======================================================================
     # GROUPS
     # =======================================================================
 
     async def get_group_id(self, group: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/groups/id",
-            _params(("link", _as_facebook_group_url(group)), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/groups/id",
+                _params(("link", _as_facebook_group_url(group)), extra=kwargs),
+            )
+        ).json()
 
     async def get_group_details(self, group: str, **kwargs: Any) -> GroupInfo:
         response = await self._get(
@@ -686,50 +700,64 @@ class AsyncFacebook(BaseClient):
         return GroupInfo.model_validate(response.json())
 
     async def get_group_metadata(self, group: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/groups/metadata",
-            _params(("link", _as_facebook_group_url(group)), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/groups/metadata",
+                _params(("link", _as_facebook_group_url(group)), extra=kwargs),
+            )
+        ).json()
 
     async def get_group_posts(self, group: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/groups/posts",
-            _params(("link", _as_facebook_group_url(group)), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/groups/posts",
+                _params(("link", _as_facebook_group_url(group)), extra=kwargs),
+            )
+        ).json()
 
     async def get_group_videos(self, group_id: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/groups/videos",
-            _params(("group_id", group_id), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/groups/videos",
+                _params(("group_id", group_id), extra=kwargs),
+            )
+        ).json()
 
     # =======================================================================
     # POSTS
     # =======================================================================
 
     async def get_post_id(self, post: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/posts/id",
-            _params(("link", post), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/posts/id",
+                _params(("link", post), extra=kwargs),
+            )
+        ).json()
 
     async def get_post_details(self, post: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/posts/details",
-            _params(("link", post), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/posts/details",
+                _params(("link", post), extra=kwargs),
+            )
+        ).json()
 
     async def get_post_details_extended(self, post: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/posts/details/extended",
-            _params(("link", post), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/posts/details/extended",
+                _params(("link", post), extra=kwargs),
+            )
+        ).json()
 
     async def get_post_comments(self, post: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/posts/comments",
-            _params(("link", post), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/posts/comments",
+                _params(("link", post), extra=kwargs),
+            )
+        ).json()
 
     async def get_comment_replies(
         self,
@@ -737,82 +765,104 @@ class AsyncFacebook(BaseClient):
         expansion_token: str,
         **kwargs: Any,
     ) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/posts/comments/replies",
-            _params(
-                ("comment_feedback_id", comment_feedback_id),
-                ("expansion_token", expansion_token),
-                extra=kwargs,
-            ),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/posts/comments/replies",
+                _params(
+                    ("comment_feedback_id", comment_feedback_id),
+                    ("expansion_token", expansion_token),
+                    extra=kwargs,
+                ),
+            )
+        ).json()
 
     async def get_post_attachments(self, post_id: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/posts/attachments",
-            _params(("post_id", post_id), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/posts/attachments",
+                _params(("post_id", post_id), extra=kwargs),
+            )
+        ).json()
 
     async def get_video_post_details(self, video_id: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/posts/video",
-            _params(("video_id", video_id), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/posts/video",
+                _params(("video_id", video_id), extra=kwargs),
+            )
+        ).json()
 
     # =======================================================================
     # SEARCH
     # =======================================================================
 
     async def search_pages(self, query: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/search/pages",
-            _params(("query", query), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/search/pages",
+                _params(("query", query), extra=kwargs),
+            )
+        ).json()
 
     async def search_people(self, query: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/search/people",
-            _params(("query", query), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/search/people",
+                _params(("query", query), extra=kwargs),
+            )
+        ).json()
 
     async def search_locations(self, query: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/search/locations",
-            _params(("query", query), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/search/locations",
+                _params(("query", query), extra=kwargs),
+            )
+        ).json()
 
     async def search_posts(self, query: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/search/posts",
-            _params(("query", query), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/search/posts",
+                _params(("query", query), extra=kwargs),
+            )
+        ).json()
 
     async def search_videos(self, query: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/search/videos",
-            _params(("query", query), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/search/videos",
+                _params(("query", query), extra=kwargs),
+            )
+        ).json()
 
     # =======================================================================
     # ADS LIBRARY
     # =======================================================================
 
     async def get_ads_countries(self, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/ads/countries",
-            _params(extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/ads/countries",
+                _params(extra=kwargs),
+            )
+        ).json()
 
     async def search_ads(self, query: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/ads/search",
-            _params(("query", query), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/ads/search",
+                _params(("query", query), extra=kwargs),
+            )
+        ).json()
 
     async def get_ads_page_details(self, page_id: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/ads/page-details",
-            _params(("page_id", page_id), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/ads/page-details",
+                _params(("page_id", page_id), extra=kwargs),
+            )
+        ).json()
 
     async def get_ad_archive_details(
         self,
@@ -820,76 +870,96 @@ class AsyncFacebook(BaseClient):
         page_id: str,
         **kwargs: Any,
     ) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/ads/archive-details",
-            _params(
-                ("ad_archive_id", ad_archive_id),
-                ("page_id", page_id),
-                extra=kwargs,
-            ),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/ads/archive-details",
+                _params(
+                    ("ad_archive_id", ad_archive_id),
+                    ("page_id", page_id),
+                    extra=kwargs,
+                ),
+            )
+        ).json()
 
     async def search_ads_by_keywords(self, query: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/ads/keywords",
-            _params(("query", query), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/ads/keywords",
+                _params(("query", query), extra=kwargs),
+            )
+        ).json()
 
     # =======================================================================
     # MARKETPLACE
     # =======================================================================
 
     async def search_marketplace(self, query: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/marketplace/search",
-            _params(("query", query), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/marketplace/search",
+                _params(("query", query), extra=kwargs),
+            )
+        ).json()
 
     async def get_listing_details(self, listing_id: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/marketplace/listing",
-            _params(("listing_id", listing_id), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/marketplace/listing",
+                _params(("listing_id", listing_id), extra=kwargs),
+            )
+        ).json()
 
     async def get_seller_details(self, seller_id: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/marketplace/seller",
-            _params(("seller_id", seller_id), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/marketplace/seller",
+                _params(("seller_id", seller_id), extra=kwargs),
+            )
+        ).json()
 
     async def get_marketplace_categories(self, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/marketplace/categories",
-            _params(extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/marketplace/categories",
+                _params(extra=kwargs),
+            )
+        ).json()
 
     async def get_city_coordinates(self, city: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/marketplace/city-coordinates",
-            _params(("city", city), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/marketplace/city-coordinates",
+                _params(("city", city), extra=kwargs),
+            )
+        ).json()
 
     async def search_vehicles(self, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/marketplace/vehicles",
-            _params(extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/marketplace/vehicles",
+                _params(extra=kwargs),
+            )
+        ).json()
 
     async def search_rentals(self, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/marketplace/rentals",
-            _params(extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/marketplace/rentals",
+                _params(extra=kwargs),
+            )
+        ).json()
 
     # =======================================================================
     # MEDIA
     # =======================================================================
 
     async def download_media(self, url: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/facebook/media/download",
-            _params(("url", url), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/facebook/media/download",
+                _params(("url", url), extra=kwargs),
+            )
+        ).json()
 
     # =======================================================================
     # INTERNAL

@@ -19,7 +19,10 @@ from ._client import BaseClient
 from ._errors import APIConnectionError
 
 if TYPE_CHECKING:
-    from typing import Self
+    # `Self` is in typing as of Python 3.11; for our 3.10 baseline we
+    # use the typing_extensions backport. typing_extensions is already
+    # a transitive dependency of pydantic, so no extra install.
+    from typing_extensions import Self
 
 
 class Account(BaseClient):

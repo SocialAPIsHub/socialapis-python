@@ -22,7 +22,10 @@ from ..facebook._client import _params  # reuse the param-builder
 from ._types import ProfileInfo
 
 if TYPE_CHECKING:
-    from typing import Self
+    # `Self` is in typing as of Python 3.11; for our 3.10 baseline we
+    # use the typing_extensions backport. typing_extensions is already
+    # a transitive dependency of pydantic, so no extra install.
+    from typing_extensions import Self
 
 
 def _as_instagram_url(value: str) -> str:
@@ -292,10 +295,12 @@ class AsyncInstagram(BaseClient):
     # ---- profiles ----------------------------------------------------------
 
     async def get_user_id(self, profile: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/instagram/user/id",
-            _params(("link", _as_instagram_url(profile)), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/instagram/user/id",
+                _params(("link", _as_instagram_url(profile)), extra=kwargs),
+            )
+        ).json()
 
     async def get_profile_details(self, username: str, **kwargs: Any) -> ProfileInfo:
         response = await self._get(
@@ -305,76 +310,98 @@ class AsyncInstagram(BaseClient):
         return ProfileInfo.model_validate(response.json())
 
     async def get_profile_posts(self, username: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/instagram/profile/posts",
-            _params(("username", username), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/instagram/profile/posts",
+                _params(("username", username), extra=kwargs),
+            )
+        ).json()
 
     async def get_profile_reels(self, user_id: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/instagram/profile/reels",
-            _params(("user_id", user_id), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/instagram/profile/reels",
+                _params(("user_id", user_id), extra=kwargs),
+            )
+        ).json()
 
     async def get_profile_highlights(self, user_id: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/instagram/profile/highlights",
-            _params(("user_id", user_id), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/instagram/profile/highlights",
+                _params(("user_id", user_id), extra=kwargs),
+            )
+        ).json()
 
     async def get_highlight_details(self, highlight_id: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/instagram/highlight/details",
-            _params(("highlight_id", highlight_id), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/instagram/highlight/details",
+                _params(("highlight_id", highlight_id), extra=kwargs),
+            )
+        ).json()
 
     # ---- posts -------------------------------------------------------------
 
     async def get_post_id(self, post: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/instagram/post/id",
-            _params(("link", post), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/instagram/post/id",
+                _params(("link", post), extra=kwargs),
+            )
+        ).json()
 
     async def get_post_details(self, shortcode: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/instagram/post/details",
-            _params(("shortcode", shortcode), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/instagram/post/details",
+                _params(("shortcode", shortcode), extra=kwargs),
+            )
+        ).json()
 
     # ---- reels -------------------------------------------------------------
 
     async def get_reels_feed(self, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/instagram/reels/feed",
-            _params(extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/instagram/reels/feed",
+                _params(extra=kwargs),
+            )
+        ).json()
 
     async def get_reels_by_audio(self, audio_id: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/instagram/reels/audio",
-            _params(("audio_id", audio_id), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/instagram/reels/audio",
+                _params(("audio_id", audio_id), extra=kwargs),
+            )
+        ).json()
 
     # ---- search + locations ------------------------------------------------
 
     async def search(self, keyword: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/instagram/search",
-            _params(("keyword", keyword), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/instagram/search",
+                _params(("keyword", keyword), extra=kwargs),
+            )
+        ).json()
 
     async def get_location_posts(self, location_id: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/instagram/location/posts",
-            _params(("location_id", location_id), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/instagram/location/posts",
+                _params(("location_id", location_id), extra=kwargs),
+            )
+        ).json()
 
     async def get_nearby_locations(self, location_id: str, **kwargs: Any) -> dict[str, Any]:
-        return (await self._get(
-            "/instagram/location/nearby",
-            _params(("location_id", location_id), extra=kwargs),
-        )).json()
+        return (
+            await self._get(
+                "/instagram/location/nearby",
+                _params(("location_id", location_id), extra=kwargs),
+            )
+        ).json()
 
     # ---- internal ----------------------------------------------------------
 

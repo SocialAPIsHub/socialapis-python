@@ -46,7 +46,9 @@ class PageInfo(_Model):
     category: str | None = Field(default=None, description="Page category, e.g. 'Public figure'.")
     likes: int | None = Field(default=None, description="Cumulative like count, when available.")
     followers: int | None = Field(default=None, description="Follower count.")
-    verified: bool | None = Field(default=None, description="Whether the page has a blue checkmark.")
+    verified: bool | None = Field(
+        default=None, description="Whether the page has a blue checkmark."
+    )
     about: str | None = Field(default=None, description="Free-text 'About' description.")
     website: str | None = Field(default=None, description="Linked external website, when present.")
     profile_image_url: str | None = Field(

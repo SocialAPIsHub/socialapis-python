@@ -27,7 +27,6 @@ from socialapis import (
     RateLimitError,
 )
 
-
 SAMPLE_PAGE_INFO = {
     "id": "143568085655519",
     "name": "Engen SA",
@@ -45,6 +44,7 @@ SAMPLE_PAGE_INFO = {
 # ============================================================================
 # get_page_info — the headline typed-model method
 # ============================================================================
+
 
 @respx.mock
 def test_get_page_info_returns_typed_model() -> None:
@@ -102,6 +102,7 @@ def test_missing_api_token_raises_immediately() -> None:
 # ============================================================================
 # Endpoint coverage — one assertion per category to confirm URL routing
 # ============================================================================
+
 
 @respx.mock
 def test_get_page_posts_hits_pages_posts_endpoint() -> None:
@@ -196,6 +197,7 @@ def test_extra_kwargs_forward_to_query_string() -> None:
 # Error mapping — one per HTTP status the API documents
 # ============================================================================
 
+
 @respx.mock
 def test_401_maps_to_authentication_error() -> None:
     respx.get("https://api.socialapis.io/facebook/pages/details").mock(
@@ -241,6 +243,7 @@ def test_400_maps_to_bad_request_error() -> None:
 # ============================================================================
 # Async client smoke test
 # ============================================================================
+
 
 @pytest.mark.asyncio
 @respx.mock
