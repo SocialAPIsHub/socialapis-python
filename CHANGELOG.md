@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 First public release. Full coverage of the SocialAPIs.io public REST surface
 in one shot — no v0.2/v0.3 follow-ups required for core endpoints.
 
+> **PyPI distribution name**: `socialapis-sdk` (install with
+> `pip install socialapis-sdk`). The Python import path is the
+> shorter `socialapis` (`from socialapis import Facebook`) — those
+> two are independent on PyPI.
+
 ### Added — Facebook namespace (`Facebook` / `AsyncFacebook`)
 
 **Pages**: `get_page_id`, `get_page_info`, `get_page_posts`, `get_page_reels`,
