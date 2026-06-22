@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# API tokens / env vars — NEVER commit
+.env
+.env.*
+*.token
+.socialapis_token
