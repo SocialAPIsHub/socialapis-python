@@ -19,11 +19,11 @@ from socialapis import Facebook, Instagram
 
 fb = Facebook(api_token="...")
 page = fb.get_page_info("EngenSA")
-print(page.name, page.likes, page.category)
+print(page.title, page.followers_count, page.category)
 
 ig = Instagram(api_token="...")
 profile = ig.get_profile_details("instagram")
-print(profile.username, profile.followers)
+print(profile.username, profile.followers_count)
 ```
 
 **[Get a free API token →](https://socialapis.io/auth/signup)** — 200 calls/month, no credit card
@@ -244,7 +244,7 @@ async def main():
             for slug in ["EngenSA", "Microsoft", "GitHub"]
         ])
         for page in pages:
-            print(page.name, page.followers)
+            print(page.title, page.followers_count)
 
 asyncio.run(main())
 ```
