@@ -5,7 +5,54 @@ All notable changes to this project will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] — Unreleased
+## [0.1.1] — 2026-06-22
+
+### Fixed (breaking for the typed-model methods)
+
+- **`Facebook.get_page_info` / `AsyncFacebook.get_page_info`** now correctly
+  unwrap the API's response envelope. The endpoint returns
+  `{"0": {...payload}, "message": ..., "meta": ...}` — v0.1.0 passed the
+  whole envelope to `PageInfo.model_validate()`, which left every typed
+  attribute as `None`. v0.1.1 extracts the `"0"` key before validation.
+- **`Instagram.get_profile_details` / `AsyncInstagram.get_profile_details`**
+  same fix — the endpoint wraps the payload under `"data"` (with sibling
+  `"success"`, `"message"`, `"meta"`); v0.1.0 didn't unwrap.
+- **`PageInfo`** rewritten with the real field names the API returns
+  (`ad_page_id`, `user_id`, `title`, `category`, `bio`, `description`,
+  `followers_count`, `likes_count`, `image`, `rating`, `business_hours`,
+  `twitter`/`instagram`/`linkedin`/`pinterest`/`telegram`/`youtube`, etc.).
+  Removed v0.1.0's invented fields (`name`, `likes`, `verified`,
+  `profile_image_url`) — they never populated against real responses.
+- **`GroupInfo`** rewritten with the real field names
+  (`group_id`, `group_member_count`, `description_text`,
+  `created_time`, `group_rules`, `number_of_posts_in_last_day`, etc.).
+- **`ProfileInfo`** rewritten with the real Instagram field names
+  (`id`, `pk`, `fbid`, `full_name`, `followers_count`, `following_count`,
+  `media_count`, `is_verified`, `profile_pic_url`, etc.). Removed v0.1.0's
+  invented `posts_count`, `follower_count` (singular) aliases.
+
+### Why this is a breaking change
+
+If any code was reading `page.likes`, `page.name`, `profile.followers`,
+`profile.posts_count`, those will now raise `AttributeError`. v0.1.0 left
+all those attributes as `None` (because the envelope was never unwrapped),
+so any code that checked for them was already not getting real data — but
+the rename is still technically breaking.
+
+Discovered via a real-API smoke test (added in
+`scripts/integration_smoke.py`). Every other endpoint method that returns
+`dict[str, Any]` was unaffected — those already pass through the raw
+response.
+
+### Unchanged
+
+- Public import paths (`from socialapis import Facebook, Instagram, ...`)
+- All wire-level behaviour (URLs, headers, query params)
+- The typed exception hierarchy (`AuthenticationError`,
+  `RateLimitError`, etc.)
+- The migration aliases (`FacebookScraper`, `InstagramScraper`)
+
+## [0.1.0] — 2026-06-22
 
 First public release. Full coverage of the SocialAPIs.io public REST surface
 in one shot — no v0.2/v0.3 follow-ups required for core endpoints.

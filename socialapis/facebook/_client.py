@@ -179,7 +179,15 @@ class Facebook(BaseClient):
             "/facebook/pages/details",
             _params(("link", _as_facebook_url(page)), extra=kwargs),
         )
-        return PageInfo.model_validate(response.json())
+        # This endpoint wraps the page payload under string key "0"
+        # alongside the "message" and "meta" envelope keys. Unwrap
+        # before validation; fall back to the raw body if the shape
+        # ever changes upstream.
+        body = response.json()
+        payload = (
+            body.get("0") if isinstance(body, dict) and isinstance(body.get("0"), dict) else body
+        )
+        return PageInfo.model_validate(payload)
 
     def get_page_posts(self, page: str, **kwargs: Any) -> dict[str, Any]:
         """Return recent posts from a Facebook Page.
@@ -654,7 +662,12 @@ class AsyncFacebook(BaseClient):
             "/facebook/pages/details",
             _params(("link", _as_facebook_url(page)), extra=kwargs),
         )
-        return PageInfo.model_validate(response.json())
+        # Same envelope-unwrap as the sync client — see Facebook.get_page_info.
+        body = response.json()
+        payload = (
+            body.get("0") if isinstance(body, dict) and isinstance(body.get("0"), dict) else body
+        )
+        return PageInfo.model_validate(payload)
 
     async def get_page_posts(self, page: str, **kwargs: Any) -> dict[str, Any]:
         return (
