@@ -279,13 +279,3 @@ consume credits.
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
----
-
-<sub>Keywords: facebook scraper python, facebook scraper alternative,
-facebook api python, facebook scraper not working, kevinzg facebook scraper
-fork, instagram scraper python, arc298 instagram-scraper alternative,
-instagram api python, facebook graph api alternative, facebook api without
-oauth, meta api python sdk, facebook ads library api python, facebook
-marketplace api python, instagram profile scraper, instagram reels api,
-meta ads library python, social media api python.</sub>
