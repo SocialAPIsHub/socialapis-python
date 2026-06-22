@@ -1,7 +1,7 @@
 # socialapis — Python SDK for Facebook + Instagram public data
 
-[![PyPI](https://img.shields.io/pypi/v/socialapis-sdk.svg)](https://pypi.org/project/socialapis-sdk/)
-[![Python versions](https://img.shields.io/pypi/pyversions/socialapis-sdk.svg)](https://pypi.org/project/socialapis-sdk/)
+[![PyPI](https://badge.fury.io/py/socialapis-sdk.svg)](https://pypi.org/project/socialapis-sdk/)
+[![Python versions](https://img.shields.io/pypi/pyversions/socialapis-sdk)](https://pypi.org/project/socialapis-sdk/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 The modern alternative to [`kevinzg/facebook-scraper`](https://github.com/kevinzg/facebook-scraper)
