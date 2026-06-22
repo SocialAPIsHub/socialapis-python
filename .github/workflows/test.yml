@@ -1,0 +1,63 @@
+name: Test
+
+# Runs on every PR + every push to main. Three jobs:
+#   1. lint     — ruff (format + lint, one tool replaces black/isort/flake8)
+#   2. types    — mypy --strict (catches Any leaks, missing annotations)
+#   3. test     — pytest on a matrix of supported Python versions
+#
+# All three must pass before a PR can be merged (configure as required
+# checks in the repo Settings → Branches → main branch protection).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs when a new commit lands on the same PR — saves CI minutes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install ruff
+        run: pip install "ruff>=0.6"
+      - name: Lint
+        run: ruff check .
+      - name: Format check
+        run: ruff format --check .
+
+  types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install package + dev deps
+        run: pip install -e ".[dev]"
+      - name: Mypy
+        run: mypy socialapis tests
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install package + dev deps
+        run: pip install -e ".[dev]"
+      - name: Run pytest
+        run: pytest

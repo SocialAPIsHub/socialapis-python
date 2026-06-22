@@ -1,0 +1,75 @@
+name: Release
+
+# Triggers on git tag push `vX.Y.Z`. Builds the wheel + sdist and publishes
+# to PyPI via TRUSTED PUBLISHING (OIDC) — no API token to manage.
+#
+# Setup once on the PyPI side:
+#   PyPI → Manage socialapis → Publishing → Add trusted publisher:
+#     Owner:        SocialAPIsHub
+#     Repository:   socialapis-python
+#     Workflow:     release.yml
+#     Environment:  pypi
+#
+# Then to ship:
+#   1. Bump socialapis/_version.py
+#   2. Add CHANGELOG.md entry
+#   3. Commit + git tag v0.X.Y
+#   4. git push --tags
+#   5. This workflow auto-publishes; PyPI page updates in ~30s
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+# Single in-flight release at a time (no race between two tag pushes)
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build wheel + sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install build
+        run: pip install --upgrade build
+      - name: Build distributions
+        run: python -m build
+      - name: Verify version matches tag
+        # Belt-and-suspenders — fail loudly if the tag and the package
+        # version disagree, instead of shipping a confusing release.
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          file_version=$(ls dist/socialapis-*.tar.gz | sed -E 's|.*socialapis-([^-]+)\.tar\.gz|\1|')
+          if [ "$tag" != "$file_version" ]; then
+            echo "::error::Tag ${tag} does not match package version ${file_version}"
+            exit 1
+          fi
+      - name: Upload built artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/socialapis/
+    permissions:
+      id-token: write   # OIDC token for PyPI Trusted Publishing
+    steps:
+      - name: Download built distributions
+        uses: actions/download-artifact@v5
+        with:
+          name: dist
+          path: dist/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
