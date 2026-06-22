@@ -43,9 +43,12 @@ jobs:
       - name: Verify version matches tag
         # Belt-and-suspenders — fail loudly if the tag and the package
         # version disagree, instead of shipping a confusing release.
+        # Note: PEP 625 normalises hyphens in distribution names to
+        # underscores in built filenames, so `socialapis-sdk` becomes
+        # `socialapis_sdk-X.Y.Z.tar.gz` on disk.
         run: |
           tag="${GITHUB_REF_NAME#v}"
-          file_version=$(ls dist/socialapis-*.tar.gz | sed -E 's|.*socialapis-([^-]+)\.tar\.gz|\1|')
+          file_version=$(ls dist/socialapis_sdk-*.tar.gz | sed -E 's|.*socialapis_sdk-([^-]+)\.tar\.gz|\1|')
           if [ "$tag" != "$file_version" ]; then
             echo "::error::Tag ${tag} does not match package version ${file_version}"
             exit 1
@@ -62,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/project/socialapis/
+      url: https://pypi.org/project/socialapis-sdk/
     permissions:
       id-token: write   # OIDC token for PyPI Trusted Publishing
     steps:
