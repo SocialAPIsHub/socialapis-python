@@ -15,43 +15,54 @@ pip install socialapis
 ```
 
 ```python
-from socialapis import Facebook
+from socialapis import Facebook, Instagram
 
 fb = Facebook(api_token="...")
 page = fb.get_page_info("EngenSA")
 print(page.name, page.likes, page.category)
+
+ig = Instagram(api_token="...")
+profile = ig.get_profile_details("instagram")
+print(profile.username, profile.followers)
 ```
 
-**[Get a free API token →](https://socialapis.io/auth/signup)** (200 calls/month, no credit card)
+**[Get a free API token →](https://socialapis.io/auth/signup)** — 200 calls/month, no credit card
 
-## One-line migration from `facebook-scraper`
+## One-line migration
 
-If your code currently uses [`kevinzg/facebook-scraper`](https://github.com/kevinzg/facebook-scraper), the migration is **literally one line**:
+If your code currently uses [`kevinzg/facebook-scraper`](https://github.com/kevinzg/facebook-scraper)
+or [`arc298/instagram-scraper`](https://github.com/arc298/instagram-scraper), the migration is
+**literally one import line**:
 
 ```python
 # Before — kevinzg/facebook-scraper (abandoned since 2022)
-from facebook_scraper import get_posts
+from facebook_scraper import get_page_info, get_posts
 
-# After — socialapis (drop-in alias preserves the call name)
-from socialapis import FacebookScraper       # alias of `Facebook`
+# After — socialapis (alias preserves the name)
+from socialapis import FacebookScraper
 fb = FacebookScraper(api_token="...")
+fb.get_page_info("EngenSA")
+fb.get_page_posts("EngenSA")
+
+# Same for Instagram
+from socialapis import InstagramScraper
+ig = InstagramScraper(api_token="...")
 ```
 
-The `FacebookScraper` alias exists so migrations stay greppable. Method
-names match too — `get_page_info`, `get_posts`, etc. (see the migration
-table further down).
+`FacebookScraper` and `InstagramScraper` are exact aliases of `Facebook` and `Instagram` —
+identical behavior, identical type signatures. They exist purely to keep the import
+line greppable during migration.
 
 ---
 
 ## Why this exists
 
-`kevinzg/facebook-scraper` has 9.5k+ GitHub stars and was the default
-Python library for scraping Facebook for years. It's been **abandoned since
-2022** — every Facebook DOM change breaks it, the fixes pile up in
-unmerged PRs, and downloads drift to forks that fix one bug and break two.
+`kevinzg/facebook-scraper` has 9.5k+ GitHub stars and was the default Python library for
+scraping Facebook for years. It's been **abandoned since 2022**. `arc298/instagram-scraper`
+(8.5k stars) is in similar shape. Every Meta DOM change breaks them; fixes pile up in
+unmerged PRs; downloads drift to forks that fix one bug and break two.
 
-This SDK is a **drop-in successor** that talks to a hosted API instead.
-You get:
+This SDK is the **drop-in successor**:
 
 | | `kevinzg/facebook-scraper` (2018-era) | `socialapis` (2026) |
 |---|---|---|
@@ -62,84 +73,131 @@ You get:
 | **HTTP client** | `requests` | `httpx` |
 | **Validation** | Manual dict parsing | Pydantic v2 models |
 | **Auth** | None (scrapes anonymously) | Single `x-api-token` header |
-| **Pagination** | Generator with edge-case bugs | Clean iterator + cursor handling |
+| **Pagination** | Generator with edge-case bugs | Cursor-based; API decides page size |
 | **Error handling** | Generic exceptions | Typed hierarchy (`RateLimitError`, etc.) |
 | **CI / tests** | Manual against live FB | Recorded HTTP fixtures, Python 3.10–3.13 |
+| **Coverage** | Page posts, group posts only | **45+ endpoints** across FB + IG |
 
-The trade-off: instead of running a scraper yourself, you make a REST call
-to our hosted API. **200 calls/month free**, no credit card. Paid plans
-start at $4.99/mo for 1,500 calls.
+The trade-off: instead of running a scraper yourself, you make a REST call to our hosted
+API. **200 calls/month free**, no credit card. Paid plans start at $4.99/mo for 1,500
+calls.
 
-## Quick start
+## What's covered (v0.1)
 
-### 1. Get an API token
+### Facebook (`Facebook` / `AsyncFacebook`)
 
-[Sign up free at socialapis.io](https://socialapis.io/auth/signup) — 200 calls/month, no credit card.
+**Pages**
+- `get_page_id(page)` — resolve a URL/slug to numeric ID
+- `get_page_info(page)` → `PageInfo` — page metadata (typed model)
+- `get_page_posts(page)` — recent posts
+- `get_page_reels(page)` — short-form videos
+- `get_page_videos(page)` — long-form videos
 
-### 2. Install
+**Groups**
+- `get_group_id(group)`
+- `get_group_details(group)` → `GroupInfo` (typed model)
+- `get_group_metadata(group)` — lightweight metadata only
+- `get_group_posts(group)`
+- `get_group_videos(group_id)`
 
-```bash
-pip install socialapis
-```
+**Posts**
+- `get_post_id(post)` — extract numeric ID from URL
+- `get_post_details(post)` — reactions, media, author
+- `get_post_details_extended(post)` — + views, video URLs, author verification
+- `get_post_comments(post)` — pass `include_reply_info="true"` for reply cursors
+- `get_comment_replies(comment_feedback_id, expansion_token)`
+- `get_post_attachments(post_id)`
+- `get_video_post_details(video_id)`
 
-Requires Python 3.10+.
+**Search**
+- `search_pages(query)` — supports `location_id` for geo-filtering
+- `search_people(query)`
+- `search_locations(query)` — returns location IDs for use in other endpoints
+- `search_posts(query)` — supports recency + location filters
+- `search_videos(query)`
 
-### 3. Make your first call
+**Meta Ads Library**
+- `get_ads_countries()` — supported countries
+- `search_ads(query)` — by keyword + country + activeStatus
+- `get_ads_page_details(page_id)`
+- `get_ad_archive_details(ad_archive_id, page_id)`
+- `search_ads_by_keywords(query)`
+
+**Marketplace**
+- `search_marketplace(query)` — supports lat/lng, price, condition filters
+- `get_listing_details(listing_id)`
+- `get_seller_details(seller_id)`
+- `get_marketplace_categories()`
+- `get_city_coordinates(city)` — for lat/lng filtering
+- `search_vehicles()` — bedrooms-style filters; lat/lng required
+- `search_rentals()`
+
+**Media**
+- `download_media(url)` — resolve to direct downloadable URL
+
+### Instagram (`Instagram` / `AsyncInstagram`)
+
+**Profiles**
+- `get_user_id(profile)` — username/URL → numeric user_id
+- `get_profile_details(username)` → `ProfileInfo` (typed model)
+- `get_profile_posts(username)`
+- `get_profile_reels(user_id)`
+- `get_profile_highlights(user_id)`
+- `get_highlight_details(highlight_id)`
+
+**Posts**
+- `get_post_id(post)` — extract shortcode from any post URL
+- `get_post_details(shortcode)`
+
+**Reels**
+- `get_reels_feed()` — trending feed
+- `get_reels_by_audio(audio_id)` — all reels using a specific track
+
+**Search + Locations**
+- `search(keyword)` — popular results (users / hashtags / places)
+- `get_location_posts(location_id)` — top or recent
+- `get_nearby_locations(location_id)`
+
+### Account (`Account` / `AsyncAccount`)
+
+Free calls — don't consume credits.
+
+- `get_usage()` — credit balance, plan, billing period
+- `get_top_ups()` — auto top-up settings + history
+- `get_limits()` — rate limit, concurrent-task cap, allowed packages
+
+## Pagination — no `limit=N`, just cursors
+
+Every endpoint that returns a list lets the API decide page size. To paginate, take the
+cursor from the response body and pass it back as a kwarg on the next call:
 
 ```python
-from socialapis import Facebook
+fb = Facebook(api_token="...")
 
-fb = Facebook(api_token="sk_live_...")
+# First page
+result = fb.get_page_posts("EngenSA")
+posts = result["posts"]
+cursor = result.get("next_cursor")  # actual key varies by endpoint — check docs
 
-page = fb.get_page_info("EngenSA")
-print(page.name)              # "Engen SA"
-print(page.category)          # "Petroleum Service"
-print(page.likes)             # 1234567
-print(page.verified)          # True
-print(page.profile_image_url) # "https://scontent.fbcdn.net/..."
+# Next page
+while cursor:
+    result = fb.get_page_posts("EngenSA", cursor=cursor)
+    posts.extend(result["posts"])
+    cursor = result.get("next_cursor")
 ```
 
-The return value is a typed [Pydantic](https://docs.pydantic.dev/) model —
-your IDE will autocomplete every field. New fields the API adds in future
-versions are preserved on `model_extra` for forward compatibility.
+We deliberately don't impose a uniform `limit=N` parameter — it would drift from the
+API's actual semantics. The API's response always tells you whether there's more.
 
-### 4. Use the async client when you have many calls
+## Forward-compat via `**kwargs`
+
+Every method accepts arbitrary kwargs and forwards them as query params. If the API adds
+a new filter tomorrow, you can use it today — no SDK release required:
 
 ```python
-import asyncio
-from socialapis import AsyncFacebook
-
-async def main():
-    async with AsyncFacebook(api_token="sk_live_...") as fb:
-        pages = await asyncio.gather(*[
-            fb.get_page_info(slug)
-            for slug in ["EngenSA", "Microsoft", "GitHub"]
-        ])
-        for page in pages:
-            print(page.name, page.followers)
-
-asyncio.run(main())
+fb.search_ads("fitness", country="US", activeStatus="Active", some_new_filter="x")
+# Sends: ?query=fitness&country=US&activeStatus=Active&some_new_filter=x
 ```
-
-## Migrating from `kevinzg/facebook-scraper`
-
-Methods map approximately 1-to-1, with cleaner typed returns:
-
-| `kevinzg/facebook-scraper` | `socialapis` |
-|---|---|
-| `from facebook_scraper import get_page_info` | `from socialapis import FacebookScraper` |
-| `get_page_info("page")` | `FacebookScraper(api_token=...).get_page_info("page")` |
-| `get_posts("page", pages=N)` | `FacebookScraper(...).get_posts("page", limit=N)` *(v0.2)* |
-| `get_group_info("group")` | `FacebookScraper(...).get_group_details("group")` *(v0.2)* |
-| `get_friends("user")` | (Meta blocked it years ago — even kevinzg deprecated it) |
-| `set_proxy(...)` / `set_user_agent(...)` | Not needed — we manage the infra |
-| `set_cookies(...)` | Not needed — no login required |
-
-Full working migration example:
-[`examples/migrate-from-kevinzg.py`](examples/migrate-from-kevinzg.py)
-
-The remaining method surface ships across subsequent releases (v0.2, v0.3).
-Track progress in [CHANGELOG.md](CHANGELOG.md).
 
 ## Error handling
 
@@ -167,18 +225,28 @@ except AuthenticationError:
     print("Bad token. Get one at https://socialapis.io/auth/signup")
 ```
 
-Every typed exception carries `.status_code`, `.request_id`, and
-`.body` for debugging. The `request_id` is the same value our backend
-logs — paste it into a support email and we can find the exact call.
+Every typed exception carries `.status_code`, `.request_id`, and `.body` for debugging.
+The `request_id` is the same value our backend logs — paste it into a support email
+and we can find the exact call.
 
-## Configuration
+## Async
+
+Same method surface; methods are coroutines.
 
 ```python
-Facebook(
-    api_token="...",
-    base_url="https://api.socialapis.io",   # for staging / mocking
-    timeout=30.0,                            # seconds; default 30
-)
+import asyncio
+from socialapis import AsyncFacebook
+
+async def main():
+    async with AsyncFacebook(api_token="...") as fb:
+        pages = await asyncio.gather(*[
+            fb.get_page_info(slug)
+            for slug in ["EngenSA", "Microsoft", "GitHub"]
+        ])
+        for page in pages:
+            print(page.name, page.followers)
+
+asyncio.run(main())
 ```
 
 ## Pricing
@@ -191,27 +259,8 @@ Facebook(
 | Mega | 120,000 | $179 |
 | Enterprise | Custom | [Contact us](https://socialapis.io/contact-us) |
 
-One credit per successful response. Failed calls (4xx caused by bad input)
-don't consume credits.
-
-## What's covered today (v0.1)
-
-- [x] `Facebook.get_page_info(page)` — page metadata
-- [x] Typed Pydantic models for every response
-- [x] Sync + async clients
-- [x] Typed exception hierarchy
-- [x] `FacebookScraper` alias for kevinzg drop-in migration
-- [ ] `Facebook.get_posts(page, limit=N)` — paginated posts *(v0.2)*
-- [ ] `Facebook.get_group_details(group)` *(v0.2)*
-- [ ] `Facebook.get_group_posts(group)` *(v0.2)*
-- [ ] `Facebook.search_pages(query)`, `.search_posts(query)` *(v0.2)*
-- [ ] `Facebook.search_ads(...)` — Meta Ads Library *(v0.3)*
-- [ ] `Facebook.search_marketplace(...)` *(v0.3)*
-- [ ] `Instagram` namespace — profiles, posts, reels, highlights *(v0.4)*
-
-We're shipping these in small releases to keep each version reviewable.
-The hosted API supports all of them today via REST — you can use the SDK
-for what's covered and `httpx` directly for the rest.
+One credit per successful response. Failed calls (4xx caused by bad input) don't
+consume credits.
 
 ## Other languages
 
@@ -235,6 +284,8 @@ MIT — see [LICENSE](LICENSE).
 
 <sub>Keywords: facebook scraper python, facebook scraper alternative,
 facebook api python, facebook scraper not working, kevinzg facebook scraper
-fork, instagram scraper python, instagram api python, facebook graph api
-alternative, facebook api without oauth, meta api python sdk,
-facebook data extraction, social media api python.</sub>
+fork, instagram scraper python, arc298 instagram-scraper alternative,
+instagram api python, facebook graph api alternative, facebook api without
+oauth, meta api python sdk, facebook ads library api python, facebook
+marketplace api python, instagram profile scraper, instagram reels api,
+meta ads library python, social media api python.</sub>

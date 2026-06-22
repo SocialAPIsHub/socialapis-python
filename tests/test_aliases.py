@@ -1,12 +1,13 @@
 """Verify the migration aliases stay exact references to the real classes.
 
 These aliases are part of the public contract — they exist so devs
-migrating from kevinzg/facebook-scraper can grep-replace one import
-line and keep running. Renaming them, redirecting them through a
-wrapper, or accidentally shadowing them would break that promise.
+migrating from kevinzg/facebook-scraper + arc298/instagram-scraper can
+grep-replace one import line and keep running. Renaming them,
+redirecting them through a wrapper, or accidentally shadowing them
+would break that promise.
 
-Test catches any future change that decouples the alias from the
-underlying class.
+The tests assert identity (`is`), not equality — only `is` catches
+"someone wrapped the alias in a subclass".
 """
 
 from __future__ import annotations
@@ -14,24 +15,38 @@ from __future__ import annotations
 from socialapis import (
     AsyncFacebook,
     AsyncFacebookScraper,
+    AsyncInstagram,
+    AsyncInstagramScraper,
     Facebook,
     FacebookScraper,
+    Instagram,
+    InstagramScraper,
 )
 
 
 def test_facebook_scraper_is_facebook() -> None:
-    """The kevinzg-name alias must be EXACTLY the Facebook class — same
-    object identity, not a subclass, not a wrapper."""
     assert FacebookScraper is Facebook
 
 
 def test_async_facebook_scraper_is_async_facebook() -> None:
-    """Same contract on the async side."""
     assert AsyncFacebookScraper is AsyncFacebook
 
 
+def test_instagram_scraper_is_instagram() -> None:
+    assert InstagramScraper is Instagram
+
+
+def test_async_instagram_scraper_is_async_instagram() -> None:
+    assert AsyncInstagramScraper is AsyncInstagram
+
+
 def test_facebook_scraper_instantiates_like_facebook() -> None:
-    """End-to-end smoke check — using the alias as a constructor works."""
-    fb = FacebookScraper(api_token="test_token")
+    fb = FacebookScraper(api_token="t")
     assert isinstance(fb, Facebook)
     fb.close()
+
+
+def test_instagram_scraper_instantiates_like_instagram() -> None:
+    ig = InstagramScraper(api_token="t")
+    assert isinstance(ig, Instagram)
+    ig.close()

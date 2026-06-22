@@ -1,29 +1,29 @@
 """SocialAPIs Python SDK — Facebook + Instagram public data.
 
-The fast way to integrate:
+Quick start::
 
-    from socialapis import Facebook
+    from socialapis import Facebook, Instagram
 
-    fb = Facebook(api_token="sk_live_...")
+    fb = Facebook(api_token="YOUR_API_TOKEN")
     page = fb.get_page_info("EngenSA")
-    print(page.name, page.likes, page.category)
 
-Async variant:
+    ig = Instagram(api_token="YOUR_API_TOKEN")
+    profile = ig.get_profile_details("instagram")
 
-    from socialapis import AsyncFacebook
+Async variants::
 
-    async with AsyncFacebook(api_token="sk_live_...") as fb:
+    from socialapis import AsyncFacebook, AsyncInstagram
+
+    async with AsyncFacebook(api_token="...") as fb:
         page = await fb.get_page_info("EngenSA")
 
-Migrating from kevinzg/facebook-scraper? The `FacebookScraper` alias keeps
-your imports greppable while you do the change:
+Migration aliases — the import line is the only change from kevinzg /
+arc298 abandoned scrapers::
 
-    from socialapis import FacebookScraper
+    from socialapis import FacebookScraper           # alias of Facebook
+    from socialapis import InstagramScraper          # alias of Instagram
 
-    fb = FacebookScraper(api_token="...")
-    page = fb.get_page_info("EngenSA")    # same method names as kevinzg
-
-Errors that callers commonly catch:
+Errors callers commonly handle::
 
     from socialapis import (
         AuthenticationError,           # 401 — bad token
@@ -31,10 +31,18 @@ Errors that callers commonly catch:
         RateLimitError,                # 429 — slow down
     )
 
-Full docs: https://docs.socialapis.io
+Account info (free, doesn't consume credits)::
+
+    from socialapis import Account
+
+    with Account(api_token="...") as acc:
+        usage = acc.get_usage()
+
 Free 200 calls / month: https://socialapis.io/auth/signup
+Full docs: https://docs.socialapis.io
 """
 
+from ._account import Account, AsyncAccount
 from ._errors import (
     APIConnectionError,
     APIError,
@@ -46,36 +54,49 @@ from ._errors import (
     SocialAPIsError,
 )
 from ._version import __version__
-from .facebook import AsyncFacebook, Facebook, PageInfo
+from .facebook import AsyncFacebook, Facebook, GroupInfo, PageInfo
+from .instagram import AsyncInstagram, Instagram, ProfileInfo
 
 # ---------------------------------------------------------------------------
 # Migration aliases — preserve familiar names from abandoned libraries so
 # devs can swap their import line and keep running.
 #
-# `FacebookScraper` (and `AsyncFacebookScraper`) mirror the conceptual
-# entry point of kevinzg/facebook-scraper (the 9.5k-star library that's
-# been abandoned since 2022). Aliases are exact references to `Facebook`
-# / `AsyncFacebook` — identical behavior, identical type signatures —
-# they exist purely so `from socialapis import FacebookScraper` works
-# unchanged for migrating users.
+# `FacebookScraper` mirrors the kevinzg/facebook-scraper entry point
+# (9.5k stars on GitHub, abandoned since ~2022).
 #
-# When a new "abandoned library" comes online and we want to capture
-# its audience too, add an alias here (e.g. `InstagramScraper` for
-# arc298/instagram-scraper migrants once the Instagram namespace lands).
+# `InstagramScraper` mirrors arc298/instagram-scraper (8.5k stars,
+# sporadic maintenance).
+#
+# Aliases are EXACT references — identical behavior, identical
+# type signatures, just different names. `test_aliases.py` asserts
+# this contract so accidental decoupling fails CI.
+#
+# When a new abandoned library becomes worth capturing, add an alias
+# here.
 # ---------------------------------------------------------------------------
 FacebookScraper = Facebook
 AsyncFacebookScraper = AsyncFacebook
+InstagramScraper = Instagram
+AsyncInstagramScraper = AsyncInstagram
 
 
 __all__ = [
-    # Clients
+    # Primary clients
     "Facebook",
     "AsyncFacebook",
-    # Migration aliases
+    "Instagram",
+    "AsyncInstagram",
+    "Account",
+    "AsyncAccount",
+    # Migration aliases (kevinzg + arc298 capture)
     "FacebookScraper",
     "AsyncFacebookScraper",
-    # Models
+    "InstagramScraper",
+    "AsyncInstagramScraper",
+    # Response models
     "PageInfo",
+    "GroupInfo",
+    "ProfileInfo",
     # Exceptions
     "SocialAPIsError",
     "APIError",

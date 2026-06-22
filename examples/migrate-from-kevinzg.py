@@ -1,17 +1,17 @@
 """Side-by-side migration example: kevinzg/facebook-scraper → socialapis.
 
 This script demonstrates the one-line import change required to migrate
-from the abandoned kevinzg/facebook-scraper library (9.5k stars on
-GitHub, broken since ~2022) to the modern hosted `socialapis` SDK.
+from the abandoned kevinzg/facebook-scraper library (9.5k stars,
+broken since ~2022) to the modern hosted `socialapis` SDK.
 
-The shape stays familiar — the `FacebookScraper` alias exists for exactly
-this purpose. Method names match kevinzg's where the call shape allows
-(`get_page_info`, etc.) and return typed Pydantic models you can autocomplete
-in your IDE.
+The shape stays familiar — the `FacebookScraper` alias exists for
+exactly this purpose. Method names match kevinzg's where call shape
+allows (`get_page_info`, `get_page_posts`, etc.) and return typed
+Pydantic models you can autocomplete in your IDE.
 
 Run this:
     1. Sign up free at https://socialapis.io/auth/signup
-    2. export SOCIALAPIS_TOKEN="sk_live_..."
+    2. export SOCIALAPIS_TOKEN="<paste your token from the dashboard>"
     3. python examples/migrate-from-kevinzg.py
 """
 
@@ -61,18 +61,17 @@ def main() -> None:
                 "Out of credits. Upgrade at https://socialapis.io/pricing"
             ) from None
 
-    # Same fields kevinzg returned, but now typed (page.name not page["name"])
-    print(f"Page: {page.name}")
-    print(f"  Category: {page.category}")
-    print(f"  Likes:    {page.likes:,}" if page.likes else "  Likes:    n/a")
-    print(f"  Verified: {page.verified}")
-    print(f"  About:    {page.about}")
+        # Same fields kevinzg returned, but now typed (page.name not page["name"])
+        print(f"Page: {page.name}")
+        print(f"  Category: {page.category}")
+        print(f"  Likes:    {page.likes:,}" if page.likes else "  Likes:    n/a")
 
-    # When v0.2 lands with `get_posts`, this is the equivalent of the
-    # kevinzg `for post in get_posts(...):` loop:
-    #
-    #     for post in fb.iter_posts("EngenSA", limit=50):
-    #         print(post.published_at, post.text[:80])
+        # kevinzg's `for post in get_posts(...)` equivalent — paginate via cursors
+        result = fb.get_page_posts("EngenSA")
+        for post in result.get("posts", [])[:5]:
+            timestamp = post.get("time") or post.get("published_at", "?")
+            text = post.get("text") or post.get("message", "")
+            print(f"  [{timestamp}] {text[:80]}")
 
 
 if __name__ == "__main__":
