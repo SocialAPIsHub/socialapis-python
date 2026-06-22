@@ -104,13 +104,22 @@ class Instagram(BaseClient):
     def get_profile_details(self, username: str, **kwargs: Any) -> ProfileInfo:
         """Return public Instagram profile metadata.
 
-        Backed by ``GET /instagram/profile/details``.
+        Backed by ``GET /instagram/profile/details``. The API wraps the
+        payload under ``"data"`` in the response envelope (alongside
+        ``success``, ``message``, ``meta``); the SDK unwraps before
+        validation.
         """
         response = self._get(
             "/instagram/profile/details",
             _params(("username", username), extra=kwargs),
         )
-        return ProfileInfo.model_validate(response.json())
+        body = response.json()
+        payload = (
+            body.get("data")
+            if isinstance(body, dict) and isinstance(body.get("data"), dict)
+            else body
+        )
+        return ProfileInfo.model_validate(payload)
 
     def get_profile_posts(self, username: str, **kwargs: Any) -> dict[str, Any]:
         """Return recent posts from an Instagram profile.
@@ -307,7 +316,14 @@ class AsyncInstagram(BaseClient):
             "/instagram/profile/details",
             _params(("username", username), extra=kwargs),
         )
-        return ProfileInfo.model_validate(response.json())
+        # Same envelope-unwrap as the sync client.
+        body = response.json()
+        payload = (
+            body.get("data")
+            if isinstance(body, dict) and isinstance(body.get("data"), dict)
+            else body
+        )
+        return ProfileInfo.model_validate(payload)
 
     async def get_profile_posts(self, username: str, **kwargs: Any) -> dict[str, Any]:
         return (

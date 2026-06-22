@@ -27,17 +27,36 @@ from socialapis import (
     RateLimitError,
 )
 
-SAMPLE_PAGE_INFO = {
-    "id": "143568085655519",
-    "name": "Engen SA",
+# Mirrors the real API's envelope shape (verified 2026-06-22):
+# the page payload sits under string key "0" alongside "message"
+# and "meta" envelope keys.
+SAMPLE_PAGE_PAYLOAD = {
+    "ad_page_id": "206441436112629",
+    "user_id": "100064888920170",
+    "title": "Engen SA | Cape Town",
     "url": "https://www.facebook.com/EngenSA",
-    "category": "Petroleum Service",
-    "likes": 1_234_567,
-    "followers": 1_200_000,
-    "verified": True,
-    "about": "Energy that drives Africa forward.",
-    "profileImageUrl": "https://scontent.fbcdn.net/profile.jpg",
-    "coverImageUrl": "https://scontent.fbcdn.net/cover.jpg",
+    "category": ["Petroleum Service"],
+    "bio": "Energy that drives Africa forward.",
+    "description": "Engen SA, Cape Town. 119,213 likes.",
+    "address": "Cape Town, South Africa",
+    "phone": "+27 860 036 436",
+    "email": "1call@engenoil.com",
+    "website": "engen.co.za",
+    "followers_count": 119000,
+    "followers_display": "119K followers",
+    "likes_count": 1_234_567,
+    "likes_display": "1.2M likes",
+    "image": "https://scontent.fbcdn.net/profile.jpg",
+    "image_alt": "Engen SA | Cape Town",
+    "rating": "66% recommend (327 reviews)",
+    "rating_overall": "327",
+    "status": "public",
+    "is_business_page_active": False,
+}
+SAMPLE_PAGE_INFO = {
+    "0": SAMPLE_PAGE_PAYLOAD,
+    "message": "Request completed successfully with status: OK (200)",
+    "meta": {"statusCode": 200, "duration": 1143, "creditsCharged": 1},
 }
 
 
@@ -56,12 +75,12 @@ def test_get_page_info_returns_typed_model() -> None:
         page = fb.get_page_info("EngenSA")
 
     assert isinstance(page, PageInfo)
-    assert page.id == "143568085655519"
-    assert page.name == "Engen SA"
-    assert page.likes == 1_234_567
-    assert page.verified is True
-    # Camel-case API fields populate the snake-case attributes
-    assert page.profile_image_url == "https://scontent.fbcdn.net/profile.jpg"
+    assert page.ad_page_id == "206441436112629"
+    assert page.title == "Engen SA | Cape Town"
+    assert page.likes_count == 1_234_567
+    assert page.followers_count == 119000
+    assert page.image == "https://scontent.fbcdn.net/profile.jpg"
+    assert page.is_business_page_active is False
 
 
 @respx.mock
@@ -253,7 +272,8 @@ async def test_async_get_page_info_works() -> None:
     )
     async with AsyncFacebook(api_token="t") as fb:
         page = await fb.get_page_info("EngenSA")
-    assert page.name == "Engen SA"
+    assert page.title == "Engen SA | Cape Town"
+    assert page.followers_count == 119000
 
 
 @pytest.mark.asyncio

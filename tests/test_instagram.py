@@ -11,18 +11,35 @@ import respx
 
 from socialapis import AsyncInstagram, Instagram, ProfileInfo
 
-SAMPLE_PROFILE = {
+# Mirrors the real API's envelope shape (verified 2026-06-22):
+# the profile payload sits under "data" alongside "success",
+# "message", and "meta".
+SAMPLE_PROFILE_PAYLOAD = {
     "id": "25025320",
+    "pk": "25025320",
+    "fbid": "17841400039600391",
     "username": "instagram",
-    "fullName": "Instagram",
-    "biography": "Discover what's new on Instagram 🌟",
-    "followerCount": 670_000_000,
-    "followingCount": 50,
-    "postsCount": 7_900,
-    "isVerified": True,
-    "isPrivate": False,
-    "isBusiness": True,
-    "profilePictureUrl": "https://scontent.cdninstagram.com/profile.jpg",
+    "full_name": "Instagram",
+    "biography": "Discover what's new on Instagram",
+    "profile_pic_url": "https://scontent.cdninstagram.com/profile.jpg",
+    "profile_pic_url_hd": "https://scontent.cdninstagram.com/profile_hd.jpg",
+    "external_url": "https://youtu.be/sample",
+    "followers_count": 685_000_000,
+    "following_count": 229,
+    "media_count": 7_900,
+    "is_verified": True,
+    "is_private": False,
+    "is_business_account": False,
+    "is_professional_account": True,
+    "account_type": 3,
+    "has_clips": True,
+    "category_name": "",
+}
+SAMPLE_PROFILE = {
+    "success": True,
+    "data": SAMPLE_PROFILE_PAYLOAD,
+    "message": "Request completed successfully with status: OK (200)",
+    "meta": {"statusCode": 200, "creditsCharged": 1},
 }
 
 
@@ -39,7 +56,8 @@ def test_get_profile_details_returns_typed_model() -> None:
     assert profile.id == "25025320"
     assert profile.username == "instagram"
     assert profile.full_name == "Instagram"
-    assert profile.followers == 670_000_000
+    assert profile.followers_count == 685_000_000
+    assert profile.media_count == 7_900
     assert profile.is_verified is True
 
 
