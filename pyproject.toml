@@ -118,6 +118,13 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["B011"]      # asserts in tests are fine
 
+# Without this, ruff sees `socialapis` (the editable-installed package) as
+# third-party and complains that the import-block grouping in tests/ is
+# wrong (blank line before what it thinks is a third-party import). Tell
+# ruff we are the first-party namespace.
+[tool.ruff.lint.isort]
+known-first-party = ["socialapis"]
+
 # =============================================================================
 # MYPY — strict typing
 # =============================================================================

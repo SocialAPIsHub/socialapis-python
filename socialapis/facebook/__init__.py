@@ -18,6 +18,6 @@ Both share the same method signatures; only the call pattern differs.
 """
 
 from ._client import AsyncFacebook, Facebook
-from ._types import PageInfo
+from ._types import GroupInfo, PageInfo
 
-__all__ = ["AsyncFacebook", "Facebook", "PageInfo"]
+__all__ = ["AsyncFacebook", "Facebook", "GroupInfo", "PageInfo"]
