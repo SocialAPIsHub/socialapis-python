@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 The modern alternative to [`kevinzg/facebook-scraper`](https://github.com/kevinzg/facebook-scraper)
-and [`arc298/instagram-scraper`](https://github.com/arc298/instagram-scraper) —
+and [`arc298/instagram-scraper`](https://pypi.org/project/instagram-scraper/) —
 real-time Facebook + Instagram data via REST, **no OAuth dance, no app
 review, no scraper maintenance**. Powered by hosted infrastructure at
 [socialapis.io](https://socialapis.io).
@@ -31,7 +31,7 @@ print(profile.username, profile.followers_count)
 ## One-line migration
 
 If your code currently uses [`kevinzg/facebook-scraper`](https://github.com/kevinzg/facebook-scraper)
-or [`arc298/instagram-scraper`](https://github.com/arc298/instagram-scraper), the migration is
+or [`arc298/instagram-scraper`](https://pypi.org/project/instagram-scraper/), the migration is
 **literally one import line**:
 
 ```python
