@@ -40,12 +40,14 @@ from facebook_scraper import get_page_info, get_posts
 
 # After — socialapis (alias preserves the name)
 from socialapis import FacebookScraper
+
 fb = FacebookScraper(api_token="...")
 fb.get_page_info("EngenSA")
 fb.get_page_posts("EngenSA")
 
 # Same for Instagram
 from socialapis import InstagramScraper
+
 ig = InstagramScraper(api_token="...")
 ```
 
@@ -76,7 +78,7 @@ This SDK is the **drop-in successor**:
 | **Pagination** | Generator with edge-case bugs | Cursor-based; API decides page size |
 | **Error handling** | Generic exceptions | Typed hierarchy (`RateLimitError`, etc.) |
 | **CI / tests** | Manual against live FB | Recorded HTTP fixtures, Python 3.10–3.13 |
-| **Coverage** | Page posts, group posts only | **45+ endpoints** across FB + IG |
+| **Coverage** | Page posts, group posts only | **50 endpoints** across FB + IG |
 
 The trade-off: instead of running a scraper yourself, you make a REST call to our hosted
 API. **200 calls/month free**, no credit card. Paid plans start at $4.99/mo for 1,500
@@ -205,12 +207,12 @@ fb.search_ads("fitness", country="US", activeStatus="Active", some_new_filter="x
 import time
 from socialapis import (
     Facebook,
-    AuthenticationError,           # 401 — bad token
-    InsufficientCreditsError,      # 402 — out of credits
-    RateLimitError,                # 429 — slow down
-    BadRequestError,               # 4xx — bad input
-    APIServerError,                # 5xx — retry safely
-    APIConnectionError,            # network — retry with backoff
+    AuthenticationError,  # 401 — bad token
+    InsufficientCreditsError,  # 402 — out of credits
+    RateLimitError,  # 429 — slow down
+    BadRequestError,  # 4xx — bad input
+    APIServerError,  # 5xx — retry safely
+    APIConnectionError,  # network — retry with backoff
 )
 
 fb = Facebook(api_token="...")
@@ -237,14 +239,15 @@ Same method surface; methods are coroutines.
 import asyncio
 from socialapis import AsyncFacebook
 
+
 async def main():
     async with AsyncFacebook(api_token="...") as fb:
-        pages = await asyncio.gather(*[
-            fb.get_page_info(slug)
-            for slug in ["EngenSA", "Microsoft", "GitHub"]
-        ])
+        pages = await asyncio.gather(
+            *[fb.get_page_info(slug) for slug in ["EngenSA", "Microsoft", "GitHub"]]
+        )
         for page in pages:
             print(page.title, page.followers_count)
+
 
 asyncio.run(main())
 ```
@@ -264,9 +267,10 @@ consume credits.
 
 ## Other languages
 
-- **JavaScript / TypeScript** — coming soon. [Notify me →](https://socialapis.io/api-sources)
-- **PHP** — coming soon. [Notify me →](https://socialapis.io/api-sources)
-- **Go** — coming soon. [Notify me →](https://socialapis.io/api-sources)
+- **JavaScript / TypeScript**: [`socialapis-sdk`](https://www.npmjs.com/package/socialapis-sdk) on npm — [source](https://github.com/SocialAPIsHub/socialapis-js)
+- **Go**: [`github.com/SocialAPIsHub/socialapis-go`](https://github.com/SocialAPIsHub/socialapis-go)
+- **MCP server** (Claude, Cursor, any MCP client): [`@socialapis/mcp`](https://www.npmjs.com/package/@socialapis/mcp) or hosted at `https://mcp.socialapis.io/mcp`
+- **PHP**: not available yet — [tell us if you need it](https://socialapis.io/contact-us)
 - Any language right now: hit the REST API directly with `curl` / `fetch` / `requests`. Docs at [docs.socialapis.io](https://docs.socialapis.io).
 
 ## Support
