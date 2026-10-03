@@ -76,7 +76,7 @@ This SDK is the **drop-in successor**:
 | **Pagination** | Generator with edge-case bugs | Cursor-based; API decides page size |
 | **Error handling** | Generic exceptions | Typed hierarchy (`RateLimitError`, etc.) |
 | **CI / tests** | Manual against live FB | Recorded HTTP fixtures, Python 3.10–3.13 |
-| **Coverage** | Page posts, group posts only | **45+ endpoints** across FB + IG |
+| **Coverage** | Page posts, group posts only | **50 endpoints** across FB + IG |
 
 The trade-off: instead of running a scraper yourself, you make a REST call to our hosted
 API. **200 calls/month free**, no credit card. Paid plans start at $4.99/mo for 1,500
@@ -264,9 +264,10 @@ consume credits.
 
 ## Other languages
 
-- **JavaScript / TypeScript** — coming soon. [Notify me →](https://socialapis.io/api-sources)
-- **PHP** — coming soon. [Notify me →](https://socialapis.io/api-sources)
-- **Go** — coming soon. [Notify me →](https://socialapis.io/api-sources)
+- **JavaScript / TypeScript**: [`socialapis-sdk`](https://www.npmjs.com/package/socialapis-sdk) on npm — [source](https://github.com/SocialAPIsHub/socialapis-js)
+- **Go**: [`github.com/SocialAPIsHub/socialapis-go`](https://github.com/SocialAPIsHub/socialapis-go)
+- **MCP server** (Claude, Cursor, any MCP client): [`@socialapis/mcp`](https://www.npmjs.com/package/@socialapis/mcp) or hosted at `https://mcp.socialapis.io/mcp`
+- **PHP**: not available yet — [tell us if you need it](https://socialapis.io/contact-us)
 - Any language right now: hit the REST API directly with `curl` / `fetch` / `requests`. Docs at [docs.socialapis.io](https://docs.socialapis.io).
 
 ## Support
