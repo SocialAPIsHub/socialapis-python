@@ -40,12 +40,14 @@ from facebook_scraper import get_page_info, get_posts
 
 # After — socialapis (alias preserves the name)
 from socialapis import FacebookScraper
+
 fb = FacebookScraper(api_token="...")
 fb.get_page_info("EngenSA")
 fb.get_page_posts("EngenSA")
 
 # Same for Instagram
 from socialapis import InstagramScraper
+
 ig = InstagramScraper(api_token="...")
 ```
 
@@ -205,12 +207,12 @@ fb.search_ads("fitness", country="US", activeStatus="Active", some_new_filter="x
 import time
 from socialapis import (
     Facebook,
-    AuthenticationError,           # 401 — bad token
-    InsufficientCreditsError,      # 402 — out of credits
-    RateLimitError,                # 429 — slow down
-    BadRequestError,               # 4xx — bad input
-    APIServerError,                # 5xx — retry safely
-    APIConnectionError,            # network — retry with backoff
+    AuthenticationError,  # 401 — bad token
+    InsufficientCreditsError,  # 402 — out of credits
+    RateLimitError,  # 429 — slow down
+    BadRequestError,  # 4xx — bad input
+    APIServerError,  # 5xx — retry safely
+    APIConnectionError,  # network — retry with backoff
 )
 
 fb = Facebook(api_token="...")
@@ -237,14 +239,15 @@ Same method surface; methods are coroutines.
 import asyncio
 from socialapis import AsyncFacebook
 
+
 async def main():
     async with AsyncFacebook(api_token="...") as fb:
-        pages = await asyncio.gather(*[
-            fb.get_page_info(slug)
-            for slug in ["EngenSA", "Microsoft", "GitHub"]
-        ])
+        pages = await asyncio.gather(
+            *[fb.get_page_info(slug) for slug in ["EngenSA", "Microsoft", "GitHub"]]
+        )
         for page in pages:
             print(page.title, page.followers_count)
+
 
 asyncio.run(main())
 ```
