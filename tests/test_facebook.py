@@ -147,6 +147,28 @@ def test_get_group_id_routes_to_groups_id_endpoint() -> None:
 
 
 @respx.mock
+def test_get_group_metadata_is_deprecated_alias_for_group_details() -> None:
+    route = respx.get("https://api.socialapis.io/facebook/groups/details").mock(
+        return_value=httpx.Response(200, json={"group_id": "187988788687356"})
+    )
+    with Facebook(api_token="t") as fb, pytest.warns(DeprecationWarning, match="get_group_details"):
+        data = fb.get_group_metadata("gieldagryplanszowe")
+    assert route.called
+    assert data == {"group_id": "187988788687356"}
+
+
+@respx.mock
+async def test_async_get_group_metadata_routes_to_group_details() -> None:
+    route = respx.get("https://api.socialapis.io/facebook/groups/details").mock(
+        return_value=httpx.Response(200, json={"group_id": "187988788687356"})
+    )
+    async with AsyncFacebook(api_token="t") as fb:
+        with pytest.warns(DeprecationWarning, match="get_group_details"):
+            await fb.get_group_metadata("gieldagryplanszowe")
+    assert route.called
+
+
+@respx.mock
 def test_search_pages_passes_query_and_extra_kwargs() -> None:
     route = respx.get("https://api.socialapis.io/facebook/search/pages").mock(
         return_value=httpx.Response(200, json={"results": []})
