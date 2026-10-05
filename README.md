@@ -98,7 +98,6 @@ calls.
 **Groups**
 - `get_group_id(group)`
 - `get_group_details(group)` → `GroupInfo` (typed model)
-- `get_group_metadata(group)` — lightweight metadata only
 - `get_group_posts(group)`
 - `get_group_videos(group_id)`
 
