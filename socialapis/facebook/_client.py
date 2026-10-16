@@ -26,6 +26,7 @@ underlying REST semantics and avoids drift between SDK and API.
 
 from __future__ import annotations
 
+import warnings
 from types import TracebackType
 from typing import TYPE_CHECKING, Any
 
@@ -247,13 +248,19 @@ class Facebook(BaseClient):
         return GroupInfo.model_validate(response.json())
 
     def get_group_metadata(self, group: str, **kwargs: Any) -> dict[str, Any]:
-        """Return lightweight Group metadata (name, id, url, image).
+        """Deprecated: use :meth:`get_group_details`.
 
-        Cheaper than ``get_group_details`` when you only need IDs/names.
-        Backed by ``GET /facebook/groups/metadata``.
+        The API has no ``/facebook/groups/metadata`` endpoint, so this method
+        returned 404 in 0.1.0–0.1.1. It now calls ``GET /facebook/groups/details``
+        and returns the raw JSON. It will be removed in 0.2.0.
         """
+        warnings.warn(
+            "get_group_metadata() is deprecated; use get_group_details().",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self._get(
-            "/facebook/groups/metadata",
+            "/facebook/groups/details",
             _params(("link", _as_facebook_group_url(group)), extra=kwargs),
         ).json()
 
@@ -713,9 +720,15 @@ class AsyncFacebook(BaseClient):
         return GroupInfo.model_validate(response.json())
 
     async def get_group_metadata(self, group: str, **kwargs: Any) -> dict[str, Any]:
+        """Deprecated: use :meth:`get_group_details`. See the sync client."""
+        warnings.warn(
+            "get_group_metadata() is deprecated; use get_group_details().",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return (
             await self._get(
-                "/facebook/groups/metadata",
+                "/facebook/groups/details",
                 _params(("link", _as_facebook_group_url(group)), extra=kwargs),
             )
         ).json()
