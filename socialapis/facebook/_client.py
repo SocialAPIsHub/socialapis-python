@@ -222,6 +222,19 @@ class Facebook(BaseClient):
             _params(("link", _as_facebook_url(page)), extra=kwargs),
         ).json()
 
+    def get_page_albums(self, profile_id: str, **kwargs: Any) -> dict[str, Any]:
+        """Return the photo albums of a Facebook Page.
+
+        Backed by ``GET /facebook/pages/albums``. Takes the numeric page ID
+        (use :meth:`get_page_id` to resolve a URL first). Pass ``limit``
+        (8-16) or ``end_cursor`` as keyword arguments. Use
+        :meth:`get_album_items` for the photos in one album.
+        """
+        return self._get(
+            "/facebook/pages/albums",
+            _params(("profile_id", profile_id), extra=kwargs),
+        ).json()
+
     # =======================================================================
     # GROUPS
     # =======================================================================
@@ -274,15 +287,39 @@ class Facebook(BaseClient):
             _params(("link", _as_facebook_group_url(group)), extra=kwargs),
         ).json()
 
-    def get_group_videos(self, group_id: str, **kwargs: Any) -> dict[str, Any]:
+    def get_group_videos(self, group: str, **kwargs: Any) -> dict[str, Any]:
         """Return videos posted to a Facebook Group.
 
-        Backed by ``GET /facebook/groups/videos``. Takes a numeric
-        ``group_id`` (use :meth:`get_group_id` to resolve a URL first).
+        Backed by ``GET /facebook/groups/videos``. ``group`` can be the group
+        URL, slug or numeric ID. Pass ``end_cursor`` for the next page.
         """
         return self._get(
             "/facebook/groups/videos",
+            _params(("link", _as_facebook_group_url(group)), extra=kwargs),
+        ).json()
+
+    def get_group_albums(self, group_id: str, **kwargs: Any) -> dict[str, Any]:
+        """Return the photo albums of a public Facebook Group.
+
+        Backed by ``GET /facebook/groups/albums``. Takes a numeric
+        ``group_id`` (use :meth:`get_group_id` to resolve a URL first).
+        Pass ``limit`` (8-16) as a keyword argument.
+        """
+        return self._get(
+            "/facebook/groups/albums",
             _params(("group_id", group_id), extra=kwargs),
+        ).json()
+
+    def get_album_items(self, album_id: str, **kwargs: Any) -> dict[str, Any]:
+        """Return the photos and videos inside a Facebook album.
+
+        Backed by ``GET /facebook/albums/items``. Works for page and group
+        albums; ``album_id`` comes from :meth:`get_page_albums` or
+        :meth:`get_group_albums`. Pass ``end_cursor`` for the next page.
+        """
+        return self._get(
+            "/facebook/albums/items",
+            _params(("album_id", album_id), extra=kwargs),
         ).json()
 
     # =======================================================================
@@ -700,6 +737,14 @@ class AsyncFacebook(BaseClient):
             )
         ).json()
 
+    async def get_page_albums(self, profile_id: str, **kwargs: Any) -> dict[str, Any]:
+        return (
+            await self._get(
+                "/facebook/pages/albums",
+                _params(("profile_id", profile_id), extra=kwargs),
+            )
+        ).json()
+
     # =======================================================================
     # GROUPS
     # =======================================================================
@@ -741,11 +786,27 @@ class AsyncFacebook(BaseClient):
             )
         ).json()
 
-    async def get_group_videos(self, group_id: str, **kwargs: Any) -> dict[str, Any]:
+    async def get_group_videos(self, group: str, **kwargs: Any) -> dict[str, Any]:
         return (
             await self._get(
                 "/facebook/groups/videos",
+                _params(("link", _as_facebook_group_url(group)), extra=kwargs),
+            )
+        ).json()
+
+    async def get_group_albums(self, group_id: str, **kwargs: Any) -> dict[str, Any]:
+        return (
+            await self._get(
+                "/facebook/groups/albums",
                 _params(("group_id", group_id), extra=kwargs),
+            )
+        ).json()
+
+    async def get_album_items(self, album_id: str, **kwargs: Any) -> dict[str, Any]:
+        return (
+            await self._get(
+                "/facebook/albums/items",
+                _params(("album_id", album_id), extra=kwargs),
             )
         ).json()
 

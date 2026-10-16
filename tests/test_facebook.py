@@ -307,3 +307,49 @@ async def test_async_search_marketplace_works() -> None:
     async with AsyncFacebook(api_token="t") as fb:
         result = await fb.search_marketplace("cars")
     assert result == {"listings": []}
+
+
+@respx.mock
+def test_get_page_albums_passes_profile_id_and_limit() -> None:
+    route = respx.get("https://api.socialapis.io/facebook/pages/albums").mock(
+        return_value=httpx.Response(200, json={"albums": []})
+    )
+    with Facebook(api_token="t") as fb:
+        fb.get_page_albums("100044395330646", limit=16)
+    params = route.calls.last.request.url.params
+    assert params["profile_id"] == "100044395330646"
+    assert params["limit"] == "16"
+
+
+@respx.mock
+def test_get_group_albums_passes_group_id() -> None:
+    route = respx.get("https://api.socialapis.io/facebook/groups/albums").mock(
+        return_value=httpx.Response(200, json={"albums": []})
+    )
+    with Facebook(api_token="t") as fb:
+        fb.get_group_albums("187988788687356")
+    assert route.calls.last.request.url.params["group_id"] == "187988788687356"
+
+
+@respx.mock
+async def test_async_get_album_items_passes_album_id_and_cursor() -> None:
+    route = respx.get("https://api.socialapis.io/facebook/albums/items").mock(
+        return_value=httpx.Response(200, json={"items": []})
+    )
+    async with AsyncFacebook(api_token="t") as fb:
+        await fb.get_album_items("826298618859975", end_cursor="abc")
+    params = route.calls.last.request.url.params
+    assert params["album_id"] == "826298618859975"
+    assert params["end_cursor"] == "abc"
+
+
+@respx.mock
+def test_get_group_videos_sends_link() -> None:
+    route = respx.get("https://api.socialapis.io/facebook/groups/videos").mock(
+        return_value=httpx.Response(200, json={"videos": []})
+    )
+    with Facebook(api_token="t") as fb:
+        fb.get_group_videos("187988788687356")
+    params = route.calls.last.request.url.params
+    assert params["link"] == "https://www.facebook.com/groups/187988788687356"
+    assert "group_id" not in params

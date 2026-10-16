@@ -78,7 +78,7 @@ This SDK is the **drop-in successor**:
 | **Pagination** | Generator with edge-case bugs | Cursor-based; API decides page size |
 | **Error handling** | Generic exceptions | Typed hierarchy (`RateLimitError`, etc.) |
 | **CI / tests** | Manual against live FB | Recorded HTTP fixtures, Python 3.10–3.13 |
-| **Coverage** | Page posts, group posts only | **50 endpoints** across FB + IG |
+| **Coverage** | Page posts, group posts only | **53 endpoints** across FB + IG |
 
 The trade-off: instead of running a scraper yourself, you make a REST call to our hosted
 API. **200 calls/month free**, no credit card. Paid plans start at $4.99/mo for 1,500
@@ -94,12 +94,17 @@ calls.
 - `get_page_posts(page)` — recent posts
 - `get_page_reels(page)` — short-form videos
 - `get_page_videos(page)` — long-form videos
+- `get_page_albums(profile_id)` — photo albums (numeric page ID from `get_page_id`)
 
 **Groups**
 - `get_group_id(group)`
 - `get_group_details(group)` → `GroupInfo` (typed model)
 - `get_group_posts(group)`
-- `get_group_videos(group_id)`
+- `get_group_videos(group)` — URL, slug or numeric ID
+- `get_group_albums(group_id)` — photo albums
+
+**Albums**
+- `get_album_items(album_id)` — photos and videos in a page or group album
 
 **Posts**
 - `get_post_id(post)` — extract numeric ID from URL

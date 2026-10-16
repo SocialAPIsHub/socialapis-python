@@ -5,6 +5,22 @@ All notable changes to this project will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] — 2026-10-16
+
+### Added
+
+- **Facebook photo albums** (sync and async): `get_page_albums(profile_id)`,
+  `get_group_albums(group_id)` and `get_album_items(album_id)`, backed by
+  `/facebook/pages/albums`, `/facebook/groups/albums` and
+  `/facebook/albums/items`. The SDK now covers all 53 endpoints.
+
+### Fixed
+
+- **`get_group_videos`** sent `group_id`, but `/facebook/groups/videos`
+  requires `link`, so calls failed. It now takes the group URL, slug or
+  numeric ID and sends `link` (positional calls keep working; the keyword
+  argument is renamed from `group_id` to `group`).
+
 ## [0.1.2] — 2026-10-05
 
 ### Fixed
