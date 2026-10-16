@@ -287,15 +287,15 @@ class Facebook(BaseClient):
             _params(("link", _as_facebook_group_url(group)), extra=kwargs),
         ).json()
 
-    def get_group_videos(self, group_id: str, **kwargs: Any) -> dict[str, Any]:
+    def get_group_videos(self, group: str, **kwargs: Any) -> dict[str, Any]:
         """Return videos posted to a Facebook Group.
 
-        Backed by ``GET /facebook/groups/videos``. Takes a numeric
-        ``group_id`` (use :meth:`get_group_id` to resolve a URL first).
+        Backed by ``GET /facebook/groups/videos``. ``group`` can be the group
+        URL, slug or numeric ID. Pass ``end_cursor`` for the next page.
         """
         return self._get(
             "/facebook/groups/videos",
-            _params(("group_id", group_id), extra=kwargs),
+            _params(("link", _as_facebook_group_url(group)), extra=kwargs),
         ).json()
 
     def get_group_albums(self, group_id: str, **kwargs: Any) -> dict[str, Any]:
@@ -786,11 +786,11 @@ class AsyncFacebook(BaseClient):
             )
         ).json()
 
-    async def get_group_videos(self, group_id: str, **kwargs: Any) -> dict[str, Any]:
+    async def get_group_videos(self, group: str, **kwargs: Any) -> dict[str, Any]:
         return (
             await self._get(
                 "/facebook/groups/videos",
-                _params(("group_id", group_id), extra=kwargs),
+                _params(("link", _as_facebook_group_url(group)), extra=kwargs),
             )
         ).json()
 

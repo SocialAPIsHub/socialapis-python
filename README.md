@@ -100,7 +100,7 @@ calls.
 - `get_group_id(group)`
 - `get_group_details(group)` → `GroupInfo` (typed model)
 - `get_group_posts(group)`
-- `get_group_videos(group_id)`
+- `get_group_videos(group)` — URL, slug or numeric ID
 - `get_group_albums(group_id)` — photo albums
 
 **Albums**

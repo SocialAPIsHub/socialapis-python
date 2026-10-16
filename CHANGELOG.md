@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `/facebook/pages/albums`, `/facebook/groups/albums` and
   `/facebook/albums/items`. The SDK now covers all 53 endpoints.
 
+### Fixed
+
+- **`get_group_videos`** sent `group_id`, but `/facebook/groups/videos`
+  requires `link`, so calls failed. It now takes the group URL, slug or
+  numeric ID and sends `link` (positional calls keep working; the keyword
+  argument is renamed from `group_id` to `group`).
+
 ## [0.1.2] — 2026-10-05
 
 ### Fixed
