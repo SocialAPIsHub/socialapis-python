@@ -8,7 +8,7 @@ force callers to handle library internals — bad SDK shape.
 
 The classes mirror the API's documented error semantics:
 - 401 → AuthenticationError
-- 402 → InsufficientCreditsError (returned when free-tier budget is spent)
+- 403 "Insufficient credits" (or 402) → InsufficientCreditsError (not enough credits left)
 - 429 → RateLimitError
 - 4xx (other) → BadRequestError
 - 5xx → APIServerError
@@ -56,7 +56,7 @@ class APIError(SocialAPIsError):
 
 
 class BadRequestError(APIError):
-    """4xx (excluding 401/402/429). Client-side mistake — missing parameter,
+    """4xx (excluding 401/429 and the out-of-credits 402/403). Client-side mistake — missing parameter,
     invalid value, wrong endpoint. NOT safe to retry without fixing input."""
 
 
@@ -66,7 +66,7 @@ class AuthenticationError(APIError):
 
 
 class InsufficientCreditsError(APIError):
-    """402 — credit balance exhausted. Retrying after a refill / upgrade
+    """403 "Insufficient credits" (or 402) — not enough credits left. Retrying after a refill / upgrade
     works. Tracked as a distinct exception so paid integrations can
     auto-top-up on this signal."""
 

@@ -259,6 +259,39 @@ def test_402_maps_to_insufficient_credits_error() -> None:
 
 
 @respx.mock
+def test_403_insufficient_credits_maps_to_insufficient_credits_error() -> None:
+    respx.get("https://api.socialapis.io/facebook/pages/details").mock(
+        return_value=httpx.Response(
+            403,
+            json={
+                "error": "Insufficient credits",
+                "message": "You need 3 credits",
+                "creditsNeeded": 3,
+            },
+        )
+    )
+    with Facebook(api_token="t") as fb, pytest.raises(InsufficientCreditsError) as exc_info:
+        fb.get_page_info("EngenSA")
+    assert exc_info.value.status_code == 403
+
+
+@respx.mock
+def test_403_paused_account_stays_bad_request() -> None:
+    respx.get("https://api.socialapis.io/facebook/pages/details").mock(
+        return_value=httpx.Response(
+            403,
+            json={
+                "success": False,
+                "message": "Subscription expired",
+                "code": "SUBSCRIPTION_EXPIRED",
+            },
+        )
+    )
+    with Facebook(api_token="t") as fb, pytest.raises(BadRequestError):
+        fb.get_page_info("EngenSA")
+
+
+@respx.mock
 def test_429_maps_to_rate_limit_error_with_retry_after() -> None:
     respx.get("https://api.socialapis.io/facebook/pages/details").mock(
         return_value=httpx.Response(
