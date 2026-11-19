@@ -274,7 +274,8 @@ consume credits.
 - **JavaScript / TypeScript**: [`socialapis-sdk`](https://www.npmjs.com/package/socialapis-sdk) on npm — [source](https://github.com/SocialAPIsHub/socialapis-js)
 - **Go**: [`github.com/SocialAPIsHub/socialapis-go`](https://github.com/SocialAPIsHub/socialapis-go)
 - **MCP server** (Claude, Cursor, any MCP client): [`@socialapis/mcp`](https://www.npmjs.com/package/@socialapis/mcp) or hosted at `https://mcp.socialapis.io/mcp`
-- **PHP**: not available yet — [tell us if you need it](https://socialapis.io/contact-us)
+- **PHP**: [`socialapishub/socialapis`](https://packagist.org/packages/socialapishub/socialapis) on Packagist — [source](https://github.com/SocialAPIsHub/socialapis-php)
+- **One job only**: [`facebook-ads-library-api`](https://github.com/SocialAPIsHub/facebook-ads-library-api) (Meta Ads Library search + CSV) and `facebook-scraper-api` ([Python](https://github.com/SocialAPIsHub/facebook-scraper-python), [Node.js](https://github.com/SocialAPIsHub/facebook-scraper-js)), on PyPI and npm
 - Any language right now: hit the REST API directly with `curl` / `fetch` / `requests`. Docs at [docs.socialapis.io](https://docs.socialapis.io).
 
 ## Support
