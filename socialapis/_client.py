@@ -105,7 +105,9 @@ class BaseClient:
                 request_id=request_id,
                 body=body,
             )
-        if status == 402:
+        # Out of credits: the API answers 403 {"error": "Insufficient credits",
+        # "creditsNeeded": n}. 402 is kept for compatibility.
+        if status == 402 or (status == 403 and _is_credit_error(body)):
             raise InsufficientCreditsError(
                 message,
                 status_code=status,
@@ -148,6 +150,15 @@ def _safe_json(response: httpx.Response) -> dict[str, Any]:
     except ValueError:
         return {}
     return data if isinstance(data, dict) else {}
+
+
+def _is_credit_error(body: Mapping[str, Any]) -> bool:
+    """A 403 that is about credits (not a paused account or an expired plan)."""
+    if "creditsNeeded" in body:
+        return True
+    return any(
+        isinstance(body.get(k), str) and "credit" in body[k].lower() for k in ("error", "message")
+    )
 
 
 def _extract_message(body: Mapping[str, Any]) -> str | None:

@@ -212,7 +212,7 @@ import time
 from socialapis import (
     Facebook,
     AuthenticationError,  # 401 — bad token
-    InsufficientCreditsError,  # 402 — out of credits
+    InsufficientCreditsError,  # 403 — out of credits
     RateLimitError,  # 429 — slow down
     BadRequestError,  # 4xx — bad input
     APIServerError,  # 5xx — retry safely

@@ -27,7 +27,7 @@ Errors callers commonly handle::
 
     from socialapis import (
         AuthenticationError,           # 401 — bad token
-        InsufficientCreditsError,      # 402 — out of credits
+        InsufficientCreditsError,      # 403 — out of credits
         RateLimitError,                # 429 — slow down
     )
 

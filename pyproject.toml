@@ -160,6 +160,7 @@ disallow_untyped_defs = false   # Test fixtures can use Any for brevity
 [tool.pytest.ini_options]
 minversion = "8.0"
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
 addopts = [
     "-ra",
